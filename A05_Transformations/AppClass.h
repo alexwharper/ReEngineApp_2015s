@@ -23,6 +23,14 @@ class AppClass : public ReEngAppClass
 	float m_fEarthTimer = 0; //Will count the cycles we are RE_RUNNING
 	float m_fMoonTimer = 0; //Will count the cycles the moon is RE_RUNNING
 
+	//---------------------------------------------student code------------------------------------------------
+
+	float earthOrbitDegrees;
+	float moonOrbitDegrees;
+	float earthRotationDegrees;
+
+	//---------------------------------------------------------------------------------------------------------
+
 public:
 	typedef ReEngAppClass super;
 	/*

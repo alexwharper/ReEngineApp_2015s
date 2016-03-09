@@ -18,6 +18,14 @@ void AppClass::InitVariables(void)
 	m_pSun->GenerateSphere(5.936f, 5, REYELLOW);
 	m_pEarth->GenerateTube(0.524f, 0.45f, 0.3f, 10, REBLUE);
 	m_pMoon->GenerateTube(0.524f * 0.27f, 0.45f * 0.27f, 0.3f * 0.27f, 10, REWHITE);
+
+	//---------------------------------------------student code------------------------------------------------
+
+	earthOrbitDegrees = 0.00f;
+	moonOrbitDegrees = 0.00f;
+	earthRotationDegrees = 0.00f;
+
+	//---------------------------------------------------------------------------------------------------------
 }
 
 void AppClass::Update(void)
@@ -49,11 +57,40 @@ void AppClass::Update(void)
 #pragma endregion
 
 #pragma region YOUR CODE GOES HERE
-	//Calculate the position of the Earth
-	m_m4Earth = glm::rotate(IDENTITY_M4, m_fEarthTimer, vector3(0.0f, 1.0f, 0.0f));
 
-	//Calculate the position of the Moon
-	m_m4Moon = glm::rotate(IDENTITY_M4, m_fMoonTimer, vector3(0.0f, 1.0f, 0.0f));
+	//increment body orbits + Earth rotation
+	earthOrbitDegrees += (2 * PI) / 5760;
+	if (earthOrbitDegrees >= 2 * PI)
+	{
+		earthOrbitDegrees = 0.00f;
+	}
+	moonOrbitDegrees += (2 * PI) / 368;
+	if (moonOrbitDegrees >= 2 * PI)
+	{
+		moonOrbitDegrees = 0.00f;
+	}
+	earthRotationDegrees += 1.00f;
+
+	//calculate Earth's position
+	float earthX = 11 * sin(earthOrbitDegrees);
+	float earthZ = 11 * cos(earthOrbitDegrees);
+
+	//calculate Moon's position
+	float moonX = earthX + (2 * sin(moonOrbitDegrees));
+	float moonZ = earthZ + (2 * cos(moonOrbitDegrees));
+
+	//position bodies
+	m_m4Earth = glm::translate(matrix4(), vector3(earthX, 0.00f, earthZ));
+	m_m4Moon = glm::translate(matrix4(), vector3(moonX, 0.00f, moonZ));
+
+	//rotate Earth
+	m_m4Earth = glm::rotate(m_m4Earth, earthRotationDegrees, vector3(1.0f, 0.0f, 0.0f));
+
+	////Calculate the position of the Earth
+	//m_m4Earth = glm::rotate(IDENTITY_M4, m_fEarthTimer, vector3(0.0f, 1.0f, 0.0f));
+
+	////Calculate the position of the Moon
+	//m_m4Moon = glm::rotate(IDENTITY_M4, m_fMoonTimer, vector3(0.0f, 1.0f, 0.0f));
 #pragma endregion
 
 #pragma region Print info
