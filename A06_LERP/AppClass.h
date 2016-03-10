@@ -13,6 +13,15 @@ using namespace ReEng; //Using ReEng namespace to use all the classes in the dll
 class AppClass : public ReEngAppClass
 {
 	float fDuration = 1.0f; //Time Duration of the stops
+	//-----------------------Student Code--------------------------------------
+	std::vector<vector3> stops; //Vector containing all stops
+	PrimitiveClass* sphere; //PrimitiveClass to draw spheres
+	matrix4 m4_sphere; //Position for the spheres
+	int lastStop; //for keeping track of the last visited stop
+	matrix4 m4_dude; //position of the dude
+	float distanceTraveled; //how far the dude has traveled
+	//-------------------------------------------------------------------------
+
 public:
 	typedef ReEngAppClass super;
 	/*

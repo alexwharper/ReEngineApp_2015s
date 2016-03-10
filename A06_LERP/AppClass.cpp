@@ -13,7 +13,32 @@ void AppClass::InitVariables(void)
 
 	m_pMeshMngr->LoadModel("Sorted\\WallEye.bto", "WallEye");
 
-	fDuration = 1.0f;
+	//--------------------------Student Code---------------------------------
+	//add all stops
+	stops.push_back(vector3(-4.0f, -2.0f, 5.0f));
+	stops.push_back(vector3(1.0f, -2.0f, 5.0f));
+	stops.push_back(vector3(-3.0f, -1.0f, 3.0f));
+	stops.push_back(vector3(2.0f, -1.0f, 3.0f));
+	stops.push_back(vector3(-2.0f, 0.0f, 0.0f));
+	stops.push_back(vector3(3.0f, 0.0f, 0.0f));
+	stops.push_back(vector3(-1.0f, 1.0f, -3.0f));
+	stops.push_back(vector3(4.0f, 1.0f, -3.0f));
+	stops.push_back(vector3(0.0f, 2.0f, -5.0f));
+	stops.push_back(vector3(5.0f, 2.0f, -5.0f));
+	stops.push_back(vector3(1.0f, 3.0f, -5.0f));
+	//initialize sphere and m4_sphere
+	sphere = new PrimitiveClass();
+	m4_sphere = IDENTITY_M4;
+	//initialize lastStop at 0
+	lastStop = 0;
+	//initialize m4_dude to the identity
+	m4_dude = IDENTITY_M4;
+	//initialize distanceTraveled to 0
+	distanceTraveled = 0.0f;
+	//-----------------------------------------------------------------------
+
+	//set the first fDuration to be between the first two stops
+	fDuration = glm::distance(stops[0], stops[1]);
 }
 
 void AppClass::Update(void)
@@ -36,7 +61,53 @@ void AppClass::Update(void)
 #pragma endregion
 
 #pragma region Your Code goes here
-	m_pMeshMngr->SetModelMatrix(IDENTITY_M4, "WallEye");
+	m4_dude = glm::translate(stops[lastStop]); //set the dude to his most recent stop
+	
+	//increment distanceTraveled with the percent of fDuration that has passed
+	//if it goes past 1, the point has been passed and it should be set to 1
+	distanceTraveled += fTimeSpan / fDuration;
+	if (distanceTraveled > 1)
+	{
+		distanceTraveled = 1;
+	}
+
+	//do some lerp
+	vector3 travelVector;
+	if (lastStop == stops.size() - 1)
+	{
+		travelVector = glm::lerp(stops[lastStop], stops[0], distanceTraveled);
+	}
+	else
+	{
+		travelVector = glm::lerp(stops[lastStop], stops[lastStop + 1], distanceTraveled);
+	}
+
+	//translate the dude
+	m4_dude = glm::translate(travelVector);
+
+	//if distanceTraveled is 1, reset it to 0, increment lastStop, and recalculate fDuration
+	if (distanceTraveled == 1)
+	{
+		distanceTraveled = 0;
+		if (lastStop == stops.size() - 1)
+		{
+			lastStop = 0;
+		}
+		else
+		{
+			lastStop++;
+		}
+		if (lastStop == stops.size() - 1)
+		{
+			fDuration = glm::distance(stops[lastStop], stops[0]);
+		}
+		else
+		{
+			fDuration = glm::distance(stops[lastStop], stops[lastStop + 1]);
+		}
+	}
+
+	m_pMeshMngr->SetModelMatrix(m4_dude, "WallEye");
 #pragma endregion
 
 #pragma region Does not need changes but feel free to change anything here
@@ -77,10 +148,22 @@ void AppClass::Display(void)
 	
 	m_pMeshMngr->Render(); //renders the render list
 
+	//---------------------Student Code-------------------------
+	//draw spheres at each stop
+	sphere->GenerateSphere(0.1f, 5, RERED);
+	for (int x = 0; x < stops.size(); x++)
+	{
+		m4_sphere = IDENTITY_M4;
+		m4_sphere = glm::translate(stops[x]);
+		sphere->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4_sphere);
+	}
+	//----------------------------------------------------------
+
 	m_pGLSystem->GLSwapBuffers(); //Swaps the OpenGL buffers
 }
 
 void AppClass::Release(void)
 {
 	super::Release(); //release the memory of the inherited fields
+	SafeDelete(sphere);
 }
