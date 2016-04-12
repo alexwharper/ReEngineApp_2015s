@@ -66,6 +66,19 @@ public:
 	IF INHERITED AND OVERRIDEN MAKE SURE TO RELEASE BASE POINTERS (OR CALL BASED CLASS RELEASE)
 	*/
 	virtual void Release(void);
+
+	/*
+	USAGE: Reads the configuration of the application to a file
+	ARGUMENTS: ---
+	OUTPUT: ---
+	*/
+	virtual void ReadConfig(void) final {}
+	/*
+	USAGE: Writes the configuration of the application to a file
+	ARGUMENTS: ---
+	OUTPUT: ---
+	*/
+	virtual void WriteConfig(void) final {}
 };
 
 #endif //__APPLICATION_H_
